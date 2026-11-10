@@ -60,3 +60,7 @@ python scripts/validate_html.py 输出文件.html
 ## 来源
 
 提炼自 2026-11-10 交付的一份 llama.cpp 升级教程页。该页的内联样式被逐条提取为 `assets/doc-style.css`，**数值一字未改**（全部规则的选择器与声明零差异），因此按本技能生成的页面与原始教程页视觉一致。
+
+## 许可
+
+[MIT](LICENSE) © 2026 seashorexu
