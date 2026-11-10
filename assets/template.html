@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文档标题 · 待替换</title>
+<link rel="stylesheet" href="doc-style.css">
+</head>
+<body>
+
+<!-- ===== 页首：kicker 是眉题，lead 是一句话摘要，chip 放版本 / 日期等元数据 ===== -->
+<header class="hero">
+  <div class="kicker">分类 · 眉题</div>
+  <h1>文档主标题</h1>
+  <p class="lead">用一到两句话说明这份文档解决什么问题、适合谁读、按什么顺序组织。限宽 760px，别写太长。</p>
+  <div class="meta">
+    <span class="chip">日期 <b>2026-11-10</b></span>
+    <span class="chip">版本 <b>v1.0</b></span>
+    <span class="chip">状态 <b>初稿</b></span>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- ===== 左目录：href 必须与下面 section 的 id 一一对应，编号用 .num ===== -->
+  <nav class="toc" id="toc">
+    <h3>目录</h3>
+    <a href="#overview"><span class="num">00</span>一页速查</a>
+    <a href="#content"><span class="num">01</span>正文与代码</a>
+    <a href="#data"><span class="num">02</span>表格与流程</a>
+    <a href="#appendix"><span class="num">03</span>附录</a>
+  </nav>
+
+  <main>
+
+  <!-- ========== 章节模板 A：并列卡片 + 结论提示 ========== -->
+  <section id="overview">
+    <h2><span class="idx">00</span>一页速查</h2>
+    <p class="sec-lead">先分层，让读者一眼分清「不用重做 / 每次要做 / 日常循环」。</p>
+
+    <div class="cards">
+      <div class="card">
+        <span class="badge">A · 一次性</span>
+        <h4>卡片标题</h4>
+        <p>说明文字 12.5px，次要灰。三列并排适合并列概念；如果只有一段内容，去掉 .cards 直接用单个 .card。</p>
+      </div>
+      <div class="card">
+        <span class="badge b">B · 每次</span>
+        <h4>卡片标题</h4>
+        <p>徽标 .badge / .badge.b / .badge.c 对应三种主次配色，顺序固定。</p>
+      </div>
+      <div class="card">
+        <span class="badge c">C · 日常</span>
+        <h4>卡片标题</h4>
+        <p>内容里可以放 <code>行内代码</code>，暖灰底棕字，和深色代码块区分开。</p>
+      </div>
+    </div>
+
+    <div class="callout ok">
+      <span class="ttl">结论 / 记住这一行就够</span>
+      <p>把最希望读者记住的一句话放这里。四态：<code>note</code> 中性说明、<code>ok</code> 结论、<code>warn</code> 注意、<code>danger</code> 危险。</p>
+    </div>
+  </section>
+
+  <!-- ========== 章节模板 B：正文层级 + 列表 + 代码块 ========== -->
+  <section id="content">
+    <h2><span class="idx">01</span>正文与代码</h2>
+    <p class="sec-lead">每章都用「编号 + 标题 + 一句导语」开头，结构重复产生秩序感。</p>
+
+    <h3>1.1　节标题</h3>
+    <p>正文 14.5px、行高 1.85。中文长文不要压行距。需要强调的用 <strong>650 字重</strong>，不要改字号；提到文件名、参数、命令用 <code>行内代码</code>。</p>
+    <ul>
+      <li>列表项之间留 5px，整体下留 14px。</li>
+      <li>术语保持准确，例如 <code>start_after_reboot.cmd</code> 不要写成别的名字。</li>
+    </ul>
+
+    <h3>1.2　代码示例</h3>
+    <p>整段命令用 <code>.codewrap &gt; pre</code>，右上角复制按钮由页面底部脚本自动注入。<strong>命令写成一整行</strong>，不要用反斜杠续行（PowerShell 不认）。</p>
+    <div class="codewrap"><pre><code><span class="cmt"># 注释用 .cmt（灰蓝）</span>
+<span class="key">llama serve</span> -m <span class="str">"model.gguf"</span> -ngl <span class="str">99</span> -c <span class="str">8192</span> -np <span class="str">1</span></code></pre></div>
+
+    <div class="callout warn">
+      <span class="ttl">注意 / 容易踩的坑</span>
+      <p>需要留意但不至于失败的边界条件放这里；会丢数据的用 <code>.callout.danger</code>。</p>
+    </div>
+  </section>
+
+  <!-- ========== 章节模板 C：表格 + 步骤 ========== -->
+  <section id="data">
+    <h2><span class="idx">02</span>表格与流程</h2>
+    <p class="sec-lead">表格无竖线、只有横向分隔线；数字列加 .num 用等宽字。</p>
+
+    <table>
+      <thead><tr><th style="width:28%">项目</th><th style="width:20%">数值</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>示例项</td><td class="num">8192</td><td>说明文字，可放 <code>行内代码</code>；状态用 <span class="yes">正常</span> / <span class="no">异常</span></td></tr>
+        <tr><td>示例项</td><td class="num">12.5px</td><td>表格文字统一 12.5px，表头 11.5px</td></tr>
+        <tr><td>示例项</td><td class="num">—</td><td>最后一行自动去掉底线</td></tr>
+      </tbody>
+    </table>
+
+    <h3>2.1　操作步骤</h3>
+    <ol class="steps">
+      <li><h4>第一步</h4><p>序号由 CSS 计数器自动生成，不用手写数字。</p></li>
+      <li><h4>第二步</h4><p>竖线自动串联，最后一项自动去掉。</p></li>
+      <li><h4>第三步</h4><p>标题 14px 深色，说明 12.5px 次要灰。</p></li>
+    </ol>
+  </section>
+
+  <!-- ========== 章节模板 D：附录 ========== -->
+  <section id="appendix">
+    <h2><span class="idx">03</span>附录</h2>
+    <p class="sec-lead">文件清单、参考链接、速查表放这里。</p>
+
+    <div class="card filelist">
+      <p><code>doc-style.css</code>　—　样式表，改配色只动 :root。</p>
+      <p><code>版式规范_可复用HTML样式.html</code>　—　全部规范与组件示例。</p>
+      <p style="margin-bottom:0"><code>本文件.html</code>　—　你正在编辑的文档。</p>
+    </div>
+
+    <hr>
+    <div class="callout note">
+      <span class="ttl">引文 / 补充说明</span>
+      <p>引用原文、背景资料、不影响操作的信息用 note 态；原稿不使用 <code>&lt;blockquote&gt;</code>，避免多维护一套样式。</p>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  页脚：版本 / 来源 / 一句话备注 · 打印时自动隐藏
+</footer>
+
+<script>
+"use strict";
+/* 代码块一键复制（自动注入到 .codewrap 内的 pre） */
+document.querySelectorAll("pre").forEach(pre => {
+  const btn = document.createElement("button");
+  btn.className = "copy";
+  btn.type = "button";
+  btn.textContent = "复制";
+  btn.addEventListener("click", async () => {
+    const text = pre.innerText;
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; }
+    catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy"); } catch (_) {}
+      ta.remove();
+    }
+    btn.textContent = ok ? "已复制" : "复制失败";
+    setTimeout(() => { btn.textContent = "复制"; }, 1400);
+  });
+  const wrap = pre.parentElement;
+  if (wrap && wrap.classList.contains("codewrap")) wrap.appendChild(btn);
+});
+/* 目录随滚动高亮 */
+const links = [...document.querySelectorAll(".toc a")];
+const byId = new Map(links.map(a => [a.getAttribute("href").slice(1), a]));
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      links.forEach(a => a.classList.remove("active"));
+      const a = byId.get(entry.target.id);
+      if (a) a.classList.add("active");
+    });
+  }, { rootMargin: "-10% 0px -75% 0px", threshold: 0 });
+  document.querySelectorAll("main section").forEach(s => io.observe(s));
+}
+if (byId.has("overview")) byId.get("overview").classList.add("active");
+</script>
+</body>
+</html>

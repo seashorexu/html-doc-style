@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>可复用 HTML 版式规范 · 文档设计系统</title>
+<link rel="stylesheet" href="doc-style.css">
+<style>
+  /* === 以下仅为「规范展示」服务的辅助样式，不属于版式规范本身 === */
+  .swatch{display:block; width:100%; height:34px; border:1px solid var(--line); border-radius:6px; margin-bottom:6px}
+  .palette{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:14px 0 20px}
+  .palette .unit{font-family:var(--mono); font-size:10.5px; color:var(--dim); line-height:1.5; display:block}
+  .palette .unit b{display:block; color:var(--ink); font-size:11.5px; font-weight:600; font-family:var(--sans)}
+  .demo{border-left:2px solid var(--line2); padding-left:16px; margin:14px 0 24px}
+  .demo .demo-tag{font-size:10.5px; letter-spacing:1px; text-transform:uppercase; color:var(--dim); font-weight:700; display:block; margin-bottom:10px}
+  .ruler{display:flex; align-items:flex-end; gap:10px; margin:12px 0 20px; flex-wrap:wrap}
+  .ruler i{display:block; background:var(--accent-soft); border:1px solid #c3e6d7; border-radius:3px; font-style:normal;
+           font-family:var(--mono); font-size:10.5px; color:var(--accent); text-align:center; padding-top:4px}
+  @media (max-width:920px){ .palette{grid-template-columns:repeat(2,1fr)} }
+  @media print{ .demo{border-left-color:#ddd} }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker">Design System · 文档版式</div>
+  <h1>可复用 HTML 版式规范</h1>
+  <p class="lead">把「教程_从升级llama.cpp到提示词工作流.html」看起来舒服的原因拆开：一组设计变量、一套离散字号刻度、九个组件规则，外加响应式与打印规则。本页自身就是用这套规范排的——你看到的每个样式，下面都有对应的数值和结构。</p>
+  <div class="meta">
+    <span class="chip">来源 <b>教程页内联样式，数值未改</b></span>
+    <span class="chip">样式表 <b>doc-style.css</b></span>
+    <span class="chip">主色 <b>#0d8060</b></span>
+    <span class="chip">适用 <b>中文长文 / 教程 / 技术手册</b></span>
+    <span class="chip">特性 <b>离线 · 可打印 · 无外部依赖</b></span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" id="toc">
+    <h3>目录</h3>
+    <a href="#use"><span class="num">00</span>怎么用这套规范</a>
+    <a href="#color"><span class="num">01</span>色彩变量</a>
+    <a href="#type"><span class="num">02</span>字阶与字体</a>
+    <a href="#scale"><span class="num">03</span>刻度：间距 / 圆角 / 栅格</a>
+    <a href="#components"><span class="num">04</span>组件规范</a>
+    <a href="#layout"><span class="num">05</span>布局 / 响应式 / 打印</a>
+    <a href="#why"><span class="num">06</span>为什么看着舒服</a>
+    <a href="#prompt"><span class="num">07</span>复制给 AI 的生成指令</a>
+    <a href="#files"><span class="num">08</span>文件清单</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 00 ============ -->
+  <section id="use">
+    <h2><span class="idx">00</span>怎么用这套规范</h2>
+    <p class="sec-lead">三条路径，按你当时在做什么选一条就行，效果完全一样。</p>
+
+    <div class="cards">
+      <div class="card">
+        <span class="badge">A · 最省事</span>
+        <h4>贴指令给 AI</h4>
+        <p>复制第 07 章那段生成指令，连同你的内容一起发给我（或任何 AI）。它会按同一组变量、字阶和组件规则产出页面，不需要你懂 CSS。</p>
+      </div>
+      <div class="card">
+        <span class="badge b">B · 自己写</span>
+        <h4>引用样式表</h4>
+        <p>HTML 里加一行 <code>&lt;link rel="stylesheet" href="doc-style.css"&gt;</code>，然后按第 04 章的 class 结构填内容。改一个变量，全页配色跟着变。</p>
+      </div>
+      <div class="card">
+        <span class="badge c">C · 直接填</span>
+        <h4>复制空白模板</h4>
+        <p>把 <code>模板_空白文档.html</code> 复制一份改名，里面已经放好页首、目录、章节、表格、代码块的占位，替换文字即可。</p>
+      </div>
+    </div>
+
+    <div class="callout ok">
+      <span class="ttl">统一规范的核心只有一句</span>
+      <p>所有视觉取值都来自 <code>:root</code> 里的变量和一张刻度表，页面正文里不出现「随手写的颜色」和「随手写的字号」。<strong>变量收口 + 离散刻度</strong>，就是整体看起来协调的根本原因，不是审美玄学。</p>
+    </div>
+  </section>
+
+  <!-- ============ 01 ============ -->
+  <section id="color">
+    <h2><span class="idx">01</span>色彩变量</h2>
+    <p class="sec-lead">全页只有 4 组颜色：纸底、四级文字灰阶、一个主色加两个语义色、一个深色代码底。没有第五种色相。</p>
+
+    <div class="palette">
+      <div><span class="swatch" style="background:var(--paper)"></span><span class="unit"><b>纸底 --paper</b>#fbfaf7 · 页面背景，暖白不刺眼</span></div>
+      <div><span class="swatch" style="background:var(--card)"></span><span class="unit"><b>卡片 --card</b>#ffffff · 白，比纸底亮一档</span></div>
+      <div><span class="swatch" style="background:var(--line)"></span><span class="unit"><b>描边 --line</b>#e4e1d9 · 统一 1px</span></div>
+      <div><span class="swatch" style="background:var(--line2)"></span><span class="unit"><b>细线 --line2</b>#efece4 · 表格内分隔</span></div>
+    </div>
+    <div class="palette">
+      <div><span class="swatch" style="background:var(--ink)"></span><span class="unit"><b>正文 --ink</b>#1c2530 · 深蓝灰，不用纯黑</span></div>
+      <div><span class="swatch" style="background:var(--muted)"></span><span class="unit"><b>次要 --muted</b>#5d6a7a · 导语、表格头</span></div>
+      <div><span class="swatch" style="background:var(--dim)"></span><span class="unit"><b>弱化 --dim</b>#8a95a2 · 编号、页脚</span></div>
+      <div><span class="swatch" style="background:#f0eee7"></span><span class="unit"><b>行内码底</b>#f0eee7 · 配棕字 #8a4a12</span></div>
+    </div>
+    <div class="palette">
+      <div><span class="swatch" style="background:var(--accent)"></span><span class="unit"><b>主色 --accent</b>#0d8060 墨绿</span></div>
+      <div><span class="swatch" style="background:var(--accent-soft)"></span><span class="unit"><b>主色浅 --accent-soft</b>#e8f5ef 同色相</span></div>
+      <div><span class="swatch" style="background:var(--amber)"></span><span class="unit"><b>注意 --amber</b>#a9701a 琥珀</span></div>
+      <div><span class="swatch" style="background:var(--amber-soft)"></span><span class="unit"><b>注意浅</b>#fdf3e2</span></div>
+    </div>
+    <div class="palette">
+      <div><span class="swatch" style="background:var(--danger)"></span><span class="unit"><b>危险 --danger</b>#b84a3d 砖红</span></div>
+      <div><span class="swatch" style="background:var(--danger-soft)"></span><span class="unit"><b>危险浅</b>#fdf0ee</span></div>
+      <div><span class="swatch" style="background:var(--code-bg)"></span><span class="unit"><b>代码底 --code-bg</b>#121a24 唯一反相</span></div>
+      <div><span class="swatch" style="background:var(--code-fg)"></span><span class="unit"><b>代码字 --code-fg</b>#dce6f0</span></div>
+    </div>
+
+    <table>
+      <thead><tr><th style="width:26%">规则</th><th>具体做法</th></tr></thead>
+      <tbody>
+        <tr><td>强色占比</td><td>墨绿只出现在章节编号、链接、目录当前项、状态词、步骤序号上，<span class="yes">全页强色面积控制在 5% 以内</span>；大面积一律用 soft 版或灰阶。</td></tr>
+        <tr><td>成对出现</td><td>每个强色都配一个同色相的 soft 底色（<code>--accent-soft</code> 等），用于徽标 / 提示块背景，<span class="no">不要另调一个新颜色</span>。</td></tr>
+        <tr><td>文字层级靠灰阶</td><td>正文 / 次要 / 弱化三级灰阶分工明确，标题才用字重区分；<strong>不靠把文字加粗或改字号来制造层级</strong>。</td></tr>
+        <tr><td>唯一反相</td><td>只有 <code>pre</code> 用深色底。其余区块（卡片、表格、提示）全是浅底 + 1px 边框，代码块因此天然成为视觉焦点。</td></tr>
+        <tr><td>氛围极轻</td><td><code>body::before</code> 用 7% / 6% 透明度的双色径向渐变做页首光晕，<code>pointer-events:none</code>，不参与内容层级。</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 02 ============ -->
+  <section id="type">
+    <h2><span class="idx">02</span>字阶与字体</h2>
+    <p class="sec-lead">字号采用 7 个主档 + 5 个组件辅助档（共 12 个固定值），字重 4 档，字体两族。任何新元素都从这张表里取值，不新增尺寸。</p>
+
+    <table>
+      <thead><tr><th style="width:22%">档位</th><th style="width:14%">字号</th><th style="width:16%">字重</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>页面标题 <code>h1</code></td><td class="num">32px</td><td class="num">700</td><td>仅页首一次；行高 1.35、字距 −0.4px</td></tr>
+        <tr><td>章标题 <code>h2</code></td><td class="num">21px</td><td class="num">700</td><td>每章一次；配 <code>.idx</code> 编号徽标</td></tr>
+        <tr><td>导语 <code>.lead</code></td><td class="num">15px</td><td class="num">400</td><td>页首摘要，限宽 760px</td></tr>
+        <tr><td>节标题 <code>h3</code></td><td class="num">15px</td><td class="num">650</td><td>章内分节，上留白 28px</td></tr>
+        <tr><td><strong>正文</strong></td><td class="num">14.5px</td><td class="num">400</td><td><strong>行高 1.85</strong>——中文长文舒适的关键值</td></tr>
+        <tr><td>小标题 / 导语 <code>h4</code> <code>.sec-lead</code></td><td class="num">13.5px</td><td class="num">650 / 400</td><td>次级说明，用 <code>--muted</code></td></tr>
+        <tr><td>组件文字</td><td class="num">12.5px</td><td class="num">400</td><td>表格、卡片、目录；提示块 13px、代码块 12px 见下</td></tr>
+        <tr><td>元信息</td><td class="num">11.5px</td><td class="num">650–700</td><td>徽标、表头、胶囊、页脚、kicker</td></tr>
+        <tr><td>组件辅助档</td><td class="num">14 / 13 / 12 / 11 / 10.5</td><td class="num">400–700</td><td>卡片标题 14、提示块 13、代码块与编号 12、步骤点 11、徽标与目录眉题 10.5；均为规范内固定值，不得新增</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout note">
+      <span class="ttl">两族字体，各司其职</span>
+      <p><code>--sans</code> 是系统无衬线栈（<code>-apple-system / Segoe UI / Microsoft YaHei / PingFang SC</code>），中文自动落到雅黑或苹方，<strong>不加载任何外部字体</strong>；<code>--mono</code> 是等宽栈（<code>Cascadia Code / Consolas / SF Mono / Menlo</code>），只用于代码、编号、数字列。等宽字一出现，读者自然知道「这是机器相关的东西」。</p>
+    </div>
+
+    <h3>层级实际长什么样</h3>
+    <div class="demo">
+      <span class="demo-tag">渲染示例</span>
+      <div style="font-size:21px;font-weight:700;letter-spacing:-.2px;margin-bottom:4px">章标题 · 21px / 700</div>
+      <div style="font-size:13.5px;color:var(--muted);margin-bottom:14px">章导语 · 13.5px / 400 / --muted</div>
+      <div style="font-size:15px;font-weight:650;margin-bottom:6px">节标题 · 15px / 650</div>
+      <p style="margin-bottom:6px">正文 14.5px / 400 / 行高 1.85。中文长段落需要比英文更松的行距，1.85 是本套规范里最不该改的数值之一。</p>
+      <div style="font-size:12.5px;color:var(--muted)">组件文字 12.5px / --muted，用于卡片与表格。</div>
+    </div>
+
+    <div class="callout warn">
+      <span class="ttl">一个可以改进的地方（原稿的取舍）</span>
+      <p>原稿把<strong>颜色和字体</strong>抽成了变量，但<strong>字号和间距</strong>是直接写死的离散数值——效果不受影响，只是换主题时不能一键缩放。若要更彻底，可以在 <code>:root</code> 里补 <code>--fs-h1:32px</code> … <code>--fs-xs:11.5px</code>、<code>--sp-1:4px</code> … <code>--sp-8:52px</code>，再替换引用。<code>doc-style.css</code> 保持原稿数值未动，就是为了让复刻效果 100% 一致。</p>
+    </div>
+  </section>
+
+  <!-- ============ 03 ============ -->
+  <section id="scale">
+    <h2><span class="idx">03</span>刻度：间距 / 圆角 / 栅格</h2>
+    <p class="sec-lead">「舒服」很大程度来自节奏均匀——所有空白都取自同一小把数字，而不是每处凭感觉调。</p>
+
+    <h3>间距刻度（px）</h3>
+    <div class="ruler">
+      <i style="width:4px;height:12px">4</i>
+      <i style="width:8px;height:16px">8</i>
+      <i style="width:12px;height:20px">12</i>
+      <i style="width:16px;height:24px">16</i>
+      <i style="width:20px;height:28px">20</i>
+      <i style="width:28px;height:34px">28</i>
+      <i style="width:34px;height:40px">34</i>
+      <i style="width:52px;height:48px">52</i>
+    </div>
+
+    <table>
+      <thead><tr><th style="width:26%">对象</th><th style="width:20%">数值</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>章节之间</td><td class="num">52px</td><td>全页最大的垂直呼吸，章节边界靠留白而不是分割线</td></tr>
+        <tr><td>页首内边距</td><td class="num">52 / 40 / 34</td><td>上 / 左右 / 下</td></tr>
+        <tr><td>卡片内边距</td><td class="num">18 × 20</td><td>表格单元 <span class="num">10 × 12</span>，代码块 <span class="num">16 × 18</span></td></tr>
+        <tr><td>标题与正文</td><td class="num">6–12</td><td>紧贴；<code>h3</code> 上留 28px，表示新一层开始</td></tr>
+        <tr><td>组件之间</td><td class="num">14–18</td><td>表格、代码块、提示块统一外边距</td></tr>
+        <tr><td>圆角</td><td class="num">4 / 6 / 8 / 10 / 12 / 99</td><td>行内码 4 → 徽标 5/6 → 步骤点 8 → 提示/表格/代码 10 → 卡片 12 → 胶囊 99，<strong>尺寸越大圆角越大</strong></td></tr>
+        <tr><td>描边</td><td class="num">1px 固定</td><td>hover 只改一个色阶，<span class="no">不叠加阴影、不加粗边框</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 04 ============ -->
+  <section id="components">
+    <h2><span class="idx">04</span>组件规范</h2>
+    <p class="sec-lead">九个组件覆盖长文所需的全部表达：章节、卡片、提示 / 引用、行内代码、代码块、表格、步骤、元信息胶囊、状态词。下面每个都是真实渲染。</p>
+
+    <h3>4.1　章节头：编号 + 标题 + 一句导语</h3>
+    <p>每章都用同一个三段式结构重复，秩序感就来自这种可预期。编号用等宽字 + 主色浅底，标题不用分割线。</p>
+    <div class="codewrap"><pre><code><span class="cmt">&lt;!-- 结构 --&gt;</span>
+<span class="key">&lt;section</span> <span class="str">id="sec-01"</span><span class="key">&gt;</span>
+  <span class="key">&lt;h2&gt;</span><span class="key">&lt;span</span> <span class="str">class="idx"</span><span class="key">&gt;</span>01<span class="key">&lt;/span&gt;</span>章节名<span class="key">&lt;/h2&gt;</span>
+  <span class="key">&lt;p</span> <span class="str">class="sec-lead"</span><span class="key">&gt;</span>一句话说明本章解决什么<span class="key">&lt;/p&gt;</span>
+  …
+<span class="key">&lt;/section&gt;</span></code></pre></div>
+
+    <h3>4.2　卡片 <code>.card</code> / <code>.cards</code> / <code>.badge</code></h3>
+    <p>三列并排用于「并列选项 / 三种阶段」，单列用于承载一段完整内容。徽标有三种配色，对应 A/B/C 或主次顺序。</p>
+    <div class="demo">
+      <span class="demo-tag">渲染示例</span>
+      <div class="card"><span class="badge">主类</span><h4>单列卡片</h4><p>白底、1px 描边、12px 圆角、18×20 内边距，标题 14px 深色，说明 12.5px 次要灰。</p></div>
+    </div>
+
+    <h3>4.3　引用与提示 <code>.callout</code> 四态</h3>
+    <p><strong>原稿没有用 <code>&lt;blockquote&gt;</code></strong>：所有引用、笔记、警告统一走 <code>.callout</code>，好处是能带标题、带语义色，不必再维护第二套样式。四态各有「浅底 + 同色相边框 + 深色正文 + 主色标题」，色相和语义固定绑定。</p>
+    <div class="demo">
+      <span class="demo-tag">四态渲染</span>
+      <div class="callout note"><span class="ttl">note · 中性说明 / 引文</span><p>蓝灰底，用于补充背景、引用原文、不影响操作的注释。</p></div>
+      <div class="callout ok"><span class="ttl">ok · 结论 / 推荐做法</span><p>主色浅底，用于「记住这一行就够」这类要被记住的结论。</p></div>
+      <div class="callout warn"><span class="ttl">warn · 注意 / 容易踩的坑</span><p>琥珀浅底，用于需要留意但不至于失败的边界条件。</p></div>
+      <div class="callout danger"><span class="ttl">danger · 危险 / 不可逆操作</span><p>砖红浅底，用于会丢数据、装错包、必须停手的场景。</p></div>
+    </div>
+
+    <h3>4.4　行内代码 <code>code</code></h3>
+    <p>暖灰底 <code>#f0eee7</code>、棕字 <code>#8a4a12</code>、4px 圆角、字号取父级的 0.88em，<code>white-space:nowrap</code> 不换行。像 <code>start_after_reboot.cmd</code> 或 <code>--port 9931</code> 这类碎片用它；<strong>刻意与深色代码块区分开</strong>，读者一眼能分辨「一个词」和「一段命令」。</p>
+
+    <h3>4.5　代码块 <code>.codewrap &gt; pre</code></h3>
+    <p>全页唯一深色区块：<code>#121a24</code> 底、<code>#dce6f0</code> 字、12px 等宽、行高 1.75、10px 圆角、横向可滚动。语法只上三种色——注释灰蓝 <code>.cmt</code>、关键字薄荷 <code>.key</code>、字符串沙金 <code>.str</code>，<strong>不做完整语法高亮</strong>，避免花掉。右上角复制按钮由页面底部脚本自动注入。</p>
+    <div class="codewrap"><pre><code><span class="cmt"># 一行写完，PowerShell 不认反斜杠续行</span>
+<span class="key">llama serve</span> -m <span class="str">"model.gguf"</span> -ngl <span class="str">99</span> -c <span class="str">8192</span> -np <span class="str">1</span></code></pre></div>
+    <div class="callout warn">
+      <span class="ttl">写命令示例时的一条硬规则</span>
+      <p>Windows 命令给<strong>一整行可复制</strong>的文本，不要用 <code>\</code> 分行续行——PowerShell 不认，复制过去会报错。长命令宁可横向滚动。</p>
+    </div>
+
+    <h3>4.6　表格 <code>table</code></h3>
+    <p>规则很克制：<strong>无竖线</strong>、只有横向分隔线（<code>--line2</code>）、表头浅米底 <code>#f5f3ed</code> + 11.5px 次要灰、单元 10×12、最后一行去底线、hover 仅微变底色。数字列加 <code>.num</code> 用等宽右齐感，是/否用 <code>.yes</code> / <code>.no</code> 着色。</p>
+    <div class="demo">
+      <span class="demo-tag">渲染示例</span>
+      <table>
+        <thead><tr><th>组件</th><th style="width:24%">尺寸</th><th>规范要点</th></tr></thead>
+        <tbody>
+          <tr><td><code>.callout</code></td><td class="num">13px / 1.75</td><td>四态语义色，必带 <code>.ttl</code></td></tr>
+          <tr><td><code>.card</code></td><td class="num">12px 圆角</td><td>浅底 + 1px 描边，不投影</td></tr>
+          <tr><td><code>pre</code></td><td class="num">12px / 1.75</td><td>唯一深色反相，<span class="yes">可复制</span></td></tr>
+          <tr><td>纯黑背景</td><td class="num">—</td><td><span class="no">禁止</span>，与纸底冲突</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>4.7　步骤 <code>.steps</code> / 元信息 <code>.chip</code></h3>
+    <p>步骤用 CSS 计数器自动生成主色圆角序号 + 一条细竖线串联，最后一个去掉竖线；胶囊用于版本、日期这类不参与阅读流的元数据。</p>
+    <div class="demo">
+      <span class="demo-tag">渲染示例</span>
+      <div class="meta" style="margin-bottom:18px"><span class="chip">版本 <b>build 12182</b></span><span class="chip">后端 <b>Vulkan</b></span></div>
+      <ol class="steps">
+        <li><h4>先确认结构</h4><p>目录、章节、组件各就各位，变量在 :root 收口。</p></li>
+        <li><h4>再填内容</h4><p>所有文字按固定字阶取值，不新增字号。</p></li>
+        <li><h4>最后校验</h4><p>锚点、标签闭合、脚本语法、打印预览各看一遍。</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ 05 ============ -->
+  <section id="layout">
+    <h2><span class="idx">05</span>布局 / 响应式 / 打印</h2>
+    <p class="sec-lead">内容宽度被刻意限住，这是长文可读性的另一半。</p>
+
+    <table>
+      <thead><tr><th style="width:28%">参数</th><th style="width:22%">值</th><th>原因</th></tr></thead>
+      <tbody>
+        <tr><td>容器最大宽</td><td class="num">1200px</td><td>宽屏不拉满，两侧留白；内部 40px 内边距</td></tr>
+        <tr><td>目录列</td><td class="num">216px · sticky</td><td>滚动时始终可见，当前章高亮</td></tr>
+        <tr><td>沟槽</td><td class="num">52px</td><td>目录与正文彻底分开，不需要竖线</td></tr>
+        <tr><td>正文列</td><td class="num">≈ 890px</td><td>中文约 45–55 字 / 行，超过就该分栏或缩字号</td></tr>
+        <tr><td>页首摘要限宽</td><td class="num">760px</td><td>摘要比正文更窄，视线更容易进入</td></tr>
+        <tr><td>响应式断点</td><td class="num">920px</td><td>目录改横排胶囊、卡片单列、h1 降为 25px</td></tr>
+        <tr><td>打印</td><td class="num">@media print</td><td>隐藏目录 / 光晕 / 复制按钮 / 页脚；深色代码块反相为浅底省墨；标题禁止孤行、区块禁止跨页切断；链接去掉下划线与颜色</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout ok">
+      <span class="ttl">容易被忽略但很值钱的一条</span>
+      <p>教程类页面一定要写 <code>@media print</code>。深色代码块直接打印会糊成一片黑、耗墨且看不清；<code>break-inside:avoid</code> 能防止表格和代码块被拦腰截断。这套规则已经内置在 <code>doc-style.css</code> 里，「打印 → 另存为 PDF」直接就能用。</p>
+    </div>
+  </section>
+
+  <!-- ============ 06 ============ -->
+  <section id="why">
+    <h2><span class="idx">06</span>为什么看着舒服</h2>
+    <p class="sec-lead">把上面的数值抽象成七条可迁移到任何页面的原则——换一套配色也照样成立。</p>
+
+    <ol>
+      <li><strong>颜色先做减法。</strong>一个主色 + 两个语义色，其余全是灰阶；强色面积 &lt; 5%，只标「要你注意」的位置。多数页面显乱，是因为用了四个以上互不相干的色相。</li>
+      <li><strong>层级靠灰阶，不靠加粗。</strong>四级文字灰阶把「正文 / 说明 / 注释 / 元数据」分开，读者不用比较字重就知道哪句重要。</li>
+      <li><strong>取值离散化。</strong>字号 12 个固定值、间距 8 个值、圆角 6 个值，所有元素从表里挑，不出现 17px、19px 这种「差不多」的数。均匀节奏是秩序感的来源。</li>
+      <li><strong>浅底 + 1px 描边统一所有区块。</strong>卡片、表格、提示块共用一种容器语言，只有代码块反相，形成唯一视觉焦点。</li>
+      <li><strong>正文行高与行宽一起管。</strong>中文 1.85 行高、正文列不超过约 890px；光调字号不调行距，长文照样累眼。</li>
+      <li><strong>结构重复。</strong>每章都是「编号 + 标题 + 一句导语」，表格都是「表头 + 无竖线」，读者扫一眼就知道当前在读什么。</li>
+      <li><strong>交互做轻。</strong>hover 只变一个色阶、没有阴影堆叠、动画 0.15s。目录当前项用一条 2px 主色左边线就够了，不需要整块高亮。</li>
+    </ol>
+
+    <div class="callout note">
+      <span class="ttl">一句话总结</span>
+      <p><strong>先定义系统，再写页面。</strong>先把 <code>:root</code>、字阶表、间距刻度、组件清单定死，之后所有内容只是往格子里填；反过来边写边调样式，几乎必然出现「这里 13px、那里 17px、这块换个蓝」的漂移。</p>
+    </div>
+  </section>
+
+  <!-- ============ 07 ============ -->
+  <section id="prompt">
+    <h2><span class="idx">07</span>复制给 AI 的生成指令</h2>
+    <p class="sec-lead">以后要生成同类 HTML，把下面这段连同内容一起发出来即可。也可以直接说「按 doc-style.css 的规范生成」。</p>
+
+    <div class="codewrap"><pre><code>请按以下版式规范，把我的内容生成一份单文件 HTML 文档（中文、离线可看、可打印成 PDF）。
+
+【技术】单个 .html，UTF-8、lang="zh-CN"、viewport；样式内联或引用同目录 doc-style.css；
+不加载外部字体 / 图片 / CDN，不用框架，无构建步骤，双击即开。
+
+【变量收口】所有颜色与字体在 :root 声明，正文里禁止散落十六进制色值：
+--paper:#fbfaf7 --card:#fff --ink:#1c2530 --muted:#5d6a7a --dim:#8a95a2
+--line:#e4e1d9 --line2:#efece4
+--accent:#0d8060 --accent-soft:#e8f5ef
+--amber:#a9701a --amber-soft:#fdf3e2
+--danger:#b84a3d --danger-soft:#fdf0ee
+--code-bg:#121a24 --code-fg:#dce6f0
+--sans:系统无衬线栈（含 Microsoft YaHei / PingFang SC）
+--mono:等宽栈（Cascadia Code / Consolas / SF Mono / Menlo）
+
+【字阶】主档 7 个：h1 32 / h2 21 / h3 15 / 正文 14.5 / h4 与导语 13.5 /
+表格卡片 12.5 / 徽标元信息 11.5；组件辅助档 14 / 13 / 12 / 11 / 10.5；
+合计 12 个固定字号，不得新增；字重 400 / 600 / 650 / 700；
+正文 line-height 1.85，组件内 1.7；正文列宽不超过约 890px。
+
+【配色用法】一个主色（墨绿）+ 两个语义色（琥珀=注意、砖红=危险），
+每个强色配同色相 soft 底色；强色只用于编号、链接、当前目录项、状态词，面积 &lt; 5%；
+文字分四级灰阶建立层级；只有代码块用深色反相，其余区块一律浅底 + 1px 边框。
+
+【刻度】间距只用 4/8/12/16/20/28/34/52；圆角 4/6/8/10/12/99（元素越大圆角越大）；
+描边统一 1px var(--line)；hover 只变一个色阶，不叠阴影。
+
+【组件】章节 = 编号徽标 .idx + h2 + 一句 .sec-lead；
+并列内容用 .cards 三列 .card + .badge；引用 / 提示用 .callout 四态
+（note / ok / warn / danger，带 .ttl 标题，不使用 blockquote）；
+行内代码 code 用暖灰底棕字；整段命令用 .codewrap &gt; pre 深色底 + .cmt/.key/.str 三色
++ 一键复制按钮，命令给一整行可复制文本，不用反斜杠续行；
+表格无竖线、表头浅底、仅横向分隔、数字用等宽 .num；
+流程用 .steps 计数器；元数据用 .chip 胶囊；结论 / 警示用 .yes / .no。
+
+【布局】1200px 容器，左 216px sticky 目录 + 52px 沟槽 + 正文列，目录随滚动高亮；
+920px 断点目录横排、卡片单列；
+必须写 @media print：隐藏目录 / 复制按钮 / 光晕 / 页脚，深色代码块反相为浅底，
+标题禁止孤行，表格与代码块 break-inside:avoid。
+
+【交付】目录锚点全部有效、标签闭合、无控制台报错；
+代码块带复制按钮；内容按「一次性 / 每次 / 日常」分层，术语与文件名保持准确。</code></pre></div>
+
+    <div class="callout warn">
+      <span class="ttl">用指令时的两个小提醒</span>
+      <p>① 指令是约束，不是内容——记得把你自己的素材一起贴上，AI 才不会编造文件名和数值；② 如果后续要长期做同类页面，直接说「引用同目录的 <code>doc-style.css</code>」比把整段变量再贴一遍更省，也更容易保持一致。</p>
+    </div>
+  </section>
+
+  <!-- ============ 08 ============ -->
+  <section id="files">
+    <h2><span class="idx">08</span>文件清单</h2>
+    <p class="sec-lead">三个文件放在同一目录，缺一个都不影响另外两个；只要 CSS 与 HTML 同级即可。</p>
+
+    <div class="card filelist">
+      <p><code>doc-style.css</code>　—　通用样式表。从教程页内联样式逐条提取，数值一字未改，按用途补了分组注释。所有页面的视觉来源。</p>
+      <p><code>版式规范_可复用HTML样式.html</code>　—　本页。规范说明 + 全部组件的真实渲染 + 可复制的生成指令。</p>
+      <p><code>模板_空白文档.html</code>　—　最小骨架。已放好页首、目录、章节、表格、代码块、提示块占位，复制改名后替换文字即可。</p>
+      <p style="margin-bottom:0;color:var(--dim)"><code>教程_从升级llama.cpp到提示词工作流.html</code>　—　原件，保持不动，作为效果对照。</p>
+    </div>
+
+    <div class="callout ok">
+      <span class="ttl">改配色只需一步</span>
+      <p>打开 <code>doc-style.css</code>，把 <code>--accent</code> 和 <code>--accent-soft</code> 换成你自己的品牌色（一深一浅、同色相），引用它的所有页面会一起变。<strong>不要去改页面里的颜色</strong>——那正是规范要避免的漂移。</p>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  文档版式规范 · 提取自 2026-11-10 的 llama.cpp 教程页 · 单文件 / 离线 / 可打印 · 打印时目录与复制按钮会自动隐藏
+</footer>
+
+<script>
+"use strict";
+/* 代码块一键复制（自动注入到 .codewrap 内的 pre） */
+document.querySelectorAll("pre").forEach(pre => {
+  const btn = document.createElement("button");
+  btn.className = "copy";
+  btn.type = "button";
+  btn.textContent = "复制";
+  btn.addEventListener("click", async () => {
+    const text = pre.innerText;
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; }
+    catch (e) {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { ok = document.execCommand("copy"); } catch (_) {}
+      ta.remove();
+    }
+    btn.textContent = ok ? "已复制" : "复制失败";
+    setTimeout(() => { btn.textContent = "复制"; }, 1400);
+  });
+  const wrap = pre.parentElement;
+  if (wrap && wrap.classList.contains("codewrap")) wrap.appendChild(btn);
+});
+/* 目录随滚动高亮 */
+const links = [...document.querySelectorAll(".toc a")];
+const byId = new Map(links.map(a => [a.getAttribute("href").slice(1), a]));
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      links.forEach(a => a.classList.remove("active"));
+      const a = byId.get(entry.target.id);
+      if (a) a.classList.add("active");
+    });
+  }, { rootMargin: "-10% 0px -75% 0px", threshold: 0 });
+  document.querySelectorAll("main section").forEach(s => io.observe(s));
+}
+if (byId.has("use")) byId.get("use").classList.add("active");
+</script>
+</body>
+</html>
